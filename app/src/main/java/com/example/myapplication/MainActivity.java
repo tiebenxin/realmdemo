@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             realm.beginTransaction();
 //            Group group = realm.createObject(Group.class, "0002");
             Group group = new Group();
+            group.setGid("0002");
             RealmList<Member> members = new RealmList<>();
             for (int i = 0; i < 3; i++) {
                 Member user = new Member();
