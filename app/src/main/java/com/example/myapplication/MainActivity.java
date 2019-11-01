@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.bean.Group;
 import com.example.myapplication.bean.Member;
 import com.example.myapplication.bean.User;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -23,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         testUpdateUser();
         testUpdateGroup();
-        testUpdateGroupMember();
+//        testUpdateGroupMember();
+        testUpdateGroupFromJson();
     }
 
 
@@ -89,6 +93,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void testUpdateGroupFromJson() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            Gson gson = new Gson();
+            Group group = gson.fromJson(createGroupJson(),Group.class);
+//            Group group = new Group();
+//            group.setGid("0002");
+//            RealmList<Member> members = new RealmList<>();
+//            for (int i = 0; i < 3; i++) {
+//                Member user = new Member();
+//                user.init(group.getGid(), i);
+//                user.setName(hexStrToString(hexString) + i);
+//                members.add(user);
+//            }
+//            group.setMembers(members);
+            realm.insertOrUpdate(group);
+            realm.commitTransaction();
+            realm.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.cancelTransaction();
+            realm.close();
+        }
+    }
+
     /*
      * String to hexString
      * */
@@ -121,4 +151,23 @@ public class MainActivity extends AppCompatActivity {
         }
         return new String(bytes);
     }
+
+    public String createGroupJson() {
+        JsonObject object = new JsonObject();
+        String gid = "0003";
+        object.addProperty("gid", gid);
+        JsonArray array = new JsonArray();
+        for (int i = 0; i < 3; i++) {
+            JsonObject user = new JsonObject();
+            long uid = i;
+            user.addProperty("memberId", gid + uid);
+            user.addProperty("gid", gid);
+            user.addProperty("uid", uid);
+            user.addProperty("name", hexStrToString(hexString) + i);
+            array.add(user);
+        }
+        object.add("members", array);
+        return object.toString();
+    }
+
 }

@@ -17,6 +17,8 @@ public class Member extends RealmObject {
 
     public void init(String gid, long uid) {
         memberId = gid + uid;
+        this.gid = gid;
+        this.userId = uid;
     }
 
     public long getUserId() {
